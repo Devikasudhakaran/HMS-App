@@ -13,8 +13,8 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()),
-      );
+          Navigator.pushReplacementNamed(context, '/login');
+
     });
     super.initState();
   }

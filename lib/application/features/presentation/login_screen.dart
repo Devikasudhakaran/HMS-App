@@ -26,10 +26,7 @@ class _LoginPageState extends State<LoginPage> {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthSuccess) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const PatientList()),
-            );
+            Navigator.pushNamed(context, '/patient');
           } else if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),

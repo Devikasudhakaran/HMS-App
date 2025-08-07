@@ -1,7 +1,5 @@
 import 'package:dio/dio.dart';
-
 import '../storage.dart';
-
 class DioClient {
   static Dio create() {
     final dio = Dio();

@@ -22,8 +22,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             event.username,
             event.password
         );
-        emit(AuthSuccess(accessToken as String));
+        emit(AuthSuccess(accessToken.toString()));
       } catch (e) {
+
         log('SignIn error: $e');
         emit(AuthFailure(e.toString()));
       }

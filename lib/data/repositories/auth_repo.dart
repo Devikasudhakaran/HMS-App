@@ -19,6 +19,8 @@
 //
 // }
 
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 
 import '../../application/core/network/dio_client.dart';
@@ -30,27 +32,25 @@ class AuthRepository {
   Future<Response> login(String username, String password) async {
     try {
       final response = await _dio.post(
-        'Login',
+        'https://flutter-amr.noviindus.in/api/Login',
         data: FormData.fromMap({
           'username': username,
           'password': password,
         }),
       );
 
-      if (response.statusCode != 200) {
-        throw Exception('Login failed with status code: ${response.statusCode}');
+      if (response.statusCode != 200|| response.data['status'] != true) {
+        throw Exception('${response.data['message']}');
       }
-      final token = response.data['data']?['accessToken'];
-      if (token == null) {
-        // await SecureStorage.writeToken(token);
-        throw Exception('Token not found in response');
+      final token = response.data['token'];
+      if (token != null) {
+        log('Login token: $token');
+        await SecureStorage.writeToken(token);
       }
 
-      await SecureStorage.writeToken(token);
-      return token;
+      return response;
     } on DioException catch (e) {
-     // throw Exception('Login failed: ${e.response?.data ?? e.message}');
-      throw Exception('Login failed: ${e.response?.data?['message'] ?? e.message}');
+      throw Exception('Login failed: ${e.response?.data ?? e.message}');
     }
   }
 }

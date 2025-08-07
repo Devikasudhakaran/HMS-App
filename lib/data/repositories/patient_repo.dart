@@ -10,7 +10,7 @@ class PatientRepository {
   Future<dynamic> fetchPatientdata() async {
     try {
       final response = await _dio.get(
-        'PatientList',
+        'https://flutter-amr.noviindus.in/api/PatientList',
       );
 
       log('API response: ${response.data}');

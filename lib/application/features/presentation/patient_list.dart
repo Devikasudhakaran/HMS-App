@@ -97,8 +97,7 @@ class _PatientListState extends State<PatientList> {
             height: 50,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const RegisterScreen()),
-                );
+                Navigator.pushNamed(context, '/register');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green[800],
