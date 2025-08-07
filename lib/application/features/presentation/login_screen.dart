@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hms/application/features/presentation/patient_list.dart';
+
+import '../auth/authbloc/auth_bloc.dart';
+import '../widgets/text_field.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -8,10 +12,31 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  void _onLoginPressed(BuildContext context) {
+    final username = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    context.read<AuthBloc>().add(SignInRequested(username: username, password: password));
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthSuccess) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const PatientList()),
+            );
+          } else if (state is AuthFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          }
+        },
+  child: SingleChildScrollView(
         child: Column(
           children: [
             Stack(
@@ -49,73 +74,23 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             const SizedBox(height: 25),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                alignment: Alignment.centerLeft,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Email',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Enter your email',
-                        filled: true,
-                        fillColor: Colors.grey[200],
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            CustomTextField(
+              label: "Email",
+              hint: "Enter your email",
+              controller: _emailController,
             ),
             const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                alignment: Alignment.centerLeft,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Password',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Enter password',
-                        filled: true,
-                        fillColor: Colors.grey[200],
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            CustomTextField(
+              label: "Password",
+              hint: "Enter your Password",
+              controller: _passwordController,
             ),
             const SizedBox(height: 65),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: SizedBox(
+              child: BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+    return SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
@@ -125,16 +100,25 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const PatientList()),
-                    );
-                  },
-                  child: const Text(
+                  onPressed: state is AuthLoading
+                      ? null
+                      : () => _onLoginPressed(context),
+                  child: state is AuthLoading
+                      ? const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  )
+                      : const Text(
                     "Login",
-                    style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
+              );
+  },
+),
             ),
             const SizedBox(height: 90),
             Padding(
@@ -168,6 +152,7 @@ class _LoginPageState extends State<LoginPage> {
           ],
         ),
       ),
+),
     );
   }
 }

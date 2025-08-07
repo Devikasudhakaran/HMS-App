@@ -8,6 +8,8 @@ class CustomTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final bool readOnly;
   final VoidCallback? onTap;
+  final TextInputType? keyboardType;
+
 
   const CustomTextField({
     super.key,
@@ -18,6 +20,7 @@ class CustomTextField extends StatelessWidget {
     this.validator,
     this.readOnly = false,
     this.onTap,
+    this.keyboardType
   });
 
   @override
@@ -40,6 +43,7 @@ class CustomTextField extends StatelessWidget {
             validator: validator,
             readOnly: readOnly,
             onTap: onTap,
+            keyboardType: keyboardType ?? TextInputType.text,
             decoration: InputDecoration(
               hintText: hint,
               filled: true,
